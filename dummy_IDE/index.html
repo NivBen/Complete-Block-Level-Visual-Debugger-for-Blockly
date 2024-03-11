@@ -12,7 +12,7 @@
 
   <!--link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css' integrity='sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO' crossorigin='anonymous'-->
   <link  rel='stylesheet' type='text/css' href='index.css'>
-
+  <link  rel="stylesheet"  data-name="vs/editor/editor.main"  href="https://unpkg.com/monaco-editor/min/vs/editor/editor.main.css"/>
   <!--link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'-->
 <style>
     body {
@@ -83,8 +83,10 @@
   <br>
   <div id='blocklyDiv' style='height: 480px; width: 600px;'></div>
   <br>
-  <div id='blocklyDiv2' style='height: 480px; width: 600px;'></div>
-  
+  <div id='blocklyDiv2' style='height: 480px; width: 49%;'>
+    <div id="monaco_container" style="height: 480px; width: 49%; position: absolute; left: 50%; border: 1px solid grey;"></div>
+  </div>
+
   <xml id='toolbox' style='display: none'>
       <category id='catLogic' colour='210' name='Logic'>
         <block type='controls_if'></block>
@@ -457,5 +459,69 @@
 
 <script  src='./dist/bundle.js'></script>
 
+<script>var require = { paths: { vs: 'https://unpkg.com/monaco-editor/min/vs' } };</script>
+  <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
+  <script src="https://unpkg.com/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
+  <script src="https://unpkg.com/monaco-editor/min/vs/editor/editor.main.js"></script>
+  <script>
+    var editor = monaco.editor.create(document.getElementById('monaco_container'), 
+      {
+        value: "Generated Block formula will be here...",
+        language: 'javascript',
+        lineNumbers: 'off',
+        theme: 'vs-dark'
+      });
+
+      // set initial editor code according to "startBlocks"
+    var js_code = Blockly.JavaScript.workspaceToCode(window.workspace["blockly2"]);
+    editor.setValue(js_code);
+
+    var isUpdating = false;
+    var debouncedB2TUpdate = debounce(blockToTextUpdate, 1000);
+    function debounce(func, wait) {
+      var timeout;
+      return function() {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => {
+              func.apply(this, arguments);
+          }, wait);
+      }
+    }
+    function blockToTextUpdate() {
+      if (isUpdating) {
+        isUpdating = false;
+      } else {
+        isUpdating = true;
+        var js_code = Blockly.JavaScript.workspaceToCode(window.workspace["blockly2"]);
+        editor.setValue(js_code);
+      }
+    }
+    function textToBlockUpdate() {
+      if (isUpdating) {
+        isUpdating = false;
+      } else {
+        isUpdating = true;
+        fetch('/parse?' + new URLSearchParams({code: editor.getValue()})).then(
+          x => x.text()
+        ).then( y => {
+          if (y.charAt(0) === "E" ) {
+            error_bar = document.getElementById('error_bar');
+            error_bar.innerHTML = y;
+            error_bar.style.opacity = 1;
+            isUpdating = false;
+          } else {
+            var response1 = JSON.parse(y);
+            error_bar.style.opacity = 0;
+            error_bar.value = "";
+            
+            Blockly.serialization.workspaces.load(response1, window.workspace["blockly2"]);
+          }
+        });
+      }
+    }
+    window.workspace["blockly2"].addChangeListener(debouncedB2TUpdate);
+    var debouncedT2BUpdate = debounce(textToBlockUpdate, 1000);
+    editor.getModel().onDidChangeContent(debouncedT2BUpdate);
+  </script>
 </body>
 </html>
