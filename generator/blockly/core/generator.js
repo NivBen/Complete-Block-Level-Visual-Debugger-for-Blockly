@@ -70,7 +70,7 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
   this.init(workspace);
   var blocks = workspace.getTopBlocks(true);
   generation.currentSystemEditorId = workspace.systemEditorId;
-  var line = "\n// start source code of another editor\n";
+  var line = "\n"; //   var line = "\n// start source code of another editor\n";
   // var line = "\n// start source code of another editor\nCurrentSystemEditorId = '" + workspace.systemEditorId + "';\n";
   code.push(line);
   for (var x = 0, block; block = blocks[x]; x++) {
