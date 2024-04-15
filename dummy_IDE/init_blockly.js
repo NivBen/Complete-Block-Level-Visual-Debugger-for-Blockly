@@ -24,14 +24,15 @@ window.workspace["blockly2"] = Blockly.inject(
 window.workspace["blockly2"].systemEditorId = 'blockly2';
 
 addEventListener("loadStartingBlocks", function () {
-    Blockly.Xml.domToText(document.getElementById('startBlocks'));
+    // Blockly.Xml.domToText(document.getElementById('startBlocks'));
     Blockly.Xml.domToWorkspace(
         document.getElementById('startBlocks'),
         window.workspace["blockly1"]
     );
 
+    // Blockly.Xml.domToText(document.getElementById('startBlocks2'));
     Blockly.Xml.domToWorkspace(
-        document.getElementById('startBlocks'),
+        document.getElementById('startBlocks2'),
         window.workspace["blockly2"]
     );
 });

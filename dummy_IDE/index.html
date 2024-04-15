@@ -23,6 +23,20 @@
       font-weight: normal;
       font-size: 140%;
     }
+
+    .myInlineDecoration {
+      color: red !important;
+      cursor: pointer;
+      text-decoration: underline;
+      font-weight: bold;
+      font-style: oblique;
+    }
+
+    .myLineDecoration {
+      background: lightblue;
+      width: 5px !important;
+      margin-left: 3px;
+    }
   </style>
 </head>
 
@@ -39,6 +53,7 @@
       <button id='StepParentButton'>Step Parent</button>
       <button id='StepOutButton'>Step Out</button>
       <button id='StopButton'>Stop</button>
+      <button id='ExportBreakpointsButton'>Export Breakpoints</button>
     </div>
     </p>
     <div id='val_table'>
@@ -48,10 +63,10 @@
     <div id='blocklyDiv' style='height: 480px; width: 600px;'></div>
     <br>
     <div id='blocklyDiv2' style='height: 480px; width: 49%;'>
-      <div id="monaco_container_js"
-        style="height: 240px; width: 49%; position: absolute; left: 50%; border: 1px solid grey;"></div>
+      <!-- <div id="monaco_container_js"
+        style="height: 240px; width: 49%; position: absolute; left: 50%; border: 1px solid grey;"></div> -->
       <div id="monaco_container_python"
-        style="height: 240px; width: 49%; position: absolute; left: 50%; bottom: -260px; border: 1px solid grey;"></div>
+        style="height: 480px; width: 49%; position: absolute; left: 50%; bottom: px; border: 1px solid grey;"></div>
     </div>
     <div>
 
@@ -68,7 +83,6 @@
         <block type='logic_ternary'></block>
       </category>
       <category id='catLoops' colour='120' name='Loops'>
-        <block type='list_range'></block>
         <block type='controls_repeat_ext'>
           <value name='TIMES'>
             <shadow type='math_number'>
@@ -273,6 +287,7 @@
           <mutation items='0'></mutation>
         </block>
         <block type='lists_create_with'></block>
+        <block type='list_range'></block>
         <block type='lists_repeat'>
           <value name='NUM'>
             <shadow type='math_number'>
@@ -364,6 +379,64 @@
 
     <xml id='startBlocks' style='display: none'></xml>
 
+    <xml id='startBlocks2' style='display: none'>
+      <block type="variables_set" id="set_n_initial" inline="true" x="20" y="20">
+        <field name="VAR"  variabletype="">n</field>
+        <value name="VALUE">
+          <block type="math_modulo">
+            <value name="DIVIDEND">
+              <shadow type="math_number">
+                <field name="NUM">64</field>
+              </shadow>
+            </value>
+            <value name="DIVISOR">
+							<block type="variables_get">
+								<field name="VAR" variabletype="">m</field>
+							</block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="controls_repeat_ext" id="repeat" inline="true">
+            <value name="TIMES">
+              <block type="math_number">
+                <field name="NUM">4</field>
+              </block>
+            </value>
+            <statement name="DO">
+              <block type="variables_set" id="set_n_update" inline="true">
+                <field name="VAR"  variabletype="">n</field>
+                <value name="VALUE">
+                  <block type="math_arithmetic">
+                    <field name="OP">MULTIPLY</field>
+                    <value name="A">
+                      <block type="variables_get">
+                        <field name="VAR"  variabletype="">n</field>
+                      </block>
+                    </value>
+                    <value name="B">
+                      <block type="math_number" >
+                        <field name="NUM">2</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </statement>
+            <next>
+              <block type="text_print" id="print">
+                <value name="TEXT">
+                  <block type="variables_get" >
+                    <field name="VAR"  variabletype="">n</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </xml>
+
     <script>
       var xhttp = new XMLHttpRequest();
 
@@ -384,14 +457,27 @@
     <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
     <script src="https://unpkg.com/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
     <script src="https://unpkg.com/monaco-editor/min/vs/editor/editor.main.js"></script>
-    <script>
+    <!-- <script>
       var editor = monaco.editor.create(document.getElementById('monaco_container_js'),
         {
           value: "Generated Javascript Block formula will be here...",
           language: 'javascript',
-          lineNumbers: 'relative',
-          theme: 'vs-dark'
+          theme: 'vs'
         });
+
+      var decorations = editor.createDecorationsCollection([
+        {
+          range: new monaco.Range(3, 1, 5, 1),
+          options: {
+            isWholeLine: true,
+            linesDecorationsClassName: "myLineDecoration",
+          },
+        },
+        {
+          range: new monaco.Range(7, 1, 7, 24),
+          options: { inlineClassName: "myInlineDecoration" },
+        },
+      ]);
 
       // set initial editor code according to "startBlocks"
       var js_code = Blockly.JavaScript.workspaceToCode(window.workspace["blockly2"]);
@@ -443,14 +529,13 @@
       window.workspace["blockly2"].addChangeListener(debouncedB2TUpdate);
       var debouncedT2BUpdate = debounce(textToBlockUpdate, 1000);
       editor.getModel().onDidChangeContent(debouncedT2BUpdate);
-    </script>
+    </script> -->
 
     <script>
       var python_editor = monaco.editor.create(document.getElementById('monaco_container_python'),
         {
           value: "Generated Python Block formula will be here...",
           language: 'python',
-          lineNumbers: 'relative',
           theme: 'vs-dark'
         });
 
@@ -506,10 +591,6 @@
       python_editor.getModel().onDidChangeContent(debouncedT2BUpdate_py);
     </script>
 
-    <script>
-
-
-    </script>
 </body>
 
 </html>

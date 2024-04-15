@@ -10,3 +10,4 @@ document.getElementById("StepParentButton").onclick = Blockly_Debugger.actions["
 document.getElementById("StepOutButton").onclick = Blockly_Debugger.actions["StepOut"].handler;
 document.getElementById("StopButton").onclick = Blockly_Debugger.actions["Stop"].handler;
 document.getElementById("StartButton").onclick = Blockly_Debugger.actions["Start"].handler;
+document.getElementById("ExportBreakpointsButton").onclick = Blockly_Debugger.actions["ExportBreakpointsToClipboard"].handler;
