@@ -1,10 +1,11 @@
 n = None
-m = None
+numbers = None
+result = None
 
 
 
 
-n = 64 % m
-for count in range(4):
-  n = n * 2
-print(n)
+n = 2
+numbers = [1, 2, 3, 4, 5]
+result = numbers[int(n - 1)]
+print(result)

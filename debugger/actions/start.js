@@ -3,7 +3,15 @@ import './watches.js';
 
 // Check if the block's type is in the list of value block types
 function isValueBlock(block) {
-    var valueBlockTypes = ['math_number', 'text', 'logic_boolean', 'math_arithmetic', 'variables_get', 'math_modulo'];
+    var valueBlockTypes = ['math_number', 
+                            'text', 
+                            'logic_boolean', 
+                            'math_arithmetic', 
+                            'variables_get', 
+                            'math_modulo', 
+                            'logic_compare', 
+                            'lists_create_with',
+                            'lists_getIndex'];
     return valueBlockTypes.includes(block.type);
 }
 
@@ -16,12 +24,15 @@ function generatecode_line_mappingForWorkspace(workspace) {
     Blockly.Python.variableDB_.setVariableMap(workspace.getVariableMap());
     // Iterate over all blocks in the workspace
     workspace.getAllBlocks().forEach(function(block) {
-        var total_block_code = Blockly.Python.blockToCode(block);
-        let block_code = '';
-        if(isValueBlock(block)) {
-            block_code = total_block_code[0]; // code string only
+        let block_code;
+        var y = block.type;
+        var x = Blockly.Python.blockToCode(block);
+        if (block.type === 'procedures_defnoreturn') {
+            block_code = 'def';
+        }else if(Array.isArray(x) /*isValueBlock(block)*/) {
+            block_code = Blockly.Python.blockToCode(block)[0]; // code string only
         } else {
-            block_code = total_block_code.split('\n')[0]; // code string only w/o proceeding blocks
+            block_code = Blockly.Python.blockToCode(block).split('\n')[0]; // code string only w/o proceeding blocks
             if(block_code.includes('count2')){
                 block_code = block_code.replace(/count2/g, "count");
             }

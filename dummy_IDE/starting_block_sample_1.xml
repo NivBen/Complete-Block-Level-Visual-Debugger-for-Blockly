@@ -1,0 +1,55 @@
+<block type="variables_set" id="set_n_initial" inline="true" x="20" y="20">
+  <field name="VAR"  variabletype="">n</field>
+  <value name="VALUE">
+    <block type="math_modulo">
+      <value name="DIVIDEND">
+        <shadow type="math_number">
+          <field name="NUM">64</field>
+        </shadow>
+      </value>
+      <value name="DIVISOR">
+        <block type="variables_get">
+          <field name="VAR" variabletype="">m</field>
+        </block>
+      </value>
+    </block>
+  </value>
+  <next>
+    <block type="controls_repeat_ext" id="repeat" inline="true">
+      <value name="TIMES">
+        <block type="math_number">
+          <field name="NUM">4</field>
+        </block>
+      </value>
+      <statement name="DO">
+        <block type="variables_set" id="set_n_update" inline="true">
+          <field name="VAR"  variabletype="">n</field>
+          <value name="VALUE">
+            <block type="math_arithmetic">
+              <field name="OP">MULTIPLY</field>
+              <value name="A">
+                <block type="variables_get">
+                  <field name="VAR"  variabletype="">n</field>
+                </block>
+              </value>
+              <value name="B">
+                <block type="math_number" >
+                  <field name="NUM">2</field>
+                </block>
+              </value>
+            </block>
+          </value>
+        </block>
+      </statement>
+      <next>
+        <block type="text_print" id="print">
+          <value name="TEXT">
+            <block type="variables_get" >
+              <field name="VAR"  variabletype="">n</field>
+            </block>
+          </value>
+        </block>
+      </next>
+    </block>
+  </next>
+</block>

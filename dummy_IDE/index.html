@@ -378,7 +378,8 @@
     </xml>
 
     <xml id='startBlocks' style='display: none'></xml>
-
+    <xml id='startBlocks_sample_1' style='display: none'></xml>
+<!-- 
     <xml id='startBlocks2' style='display: none'>
       <block type="variables_set" id="set_n_initial" inline="true" x="20" y="20">
         <field name="VAR"  variabletype="">n</field>
@@ -435,20 +436,29 @@
           </block>
         </next>
       </block>
-    </xml>
+    </xml> -->
 
     <script>
       var xhttp = new XMLHttpRequest();
-
       xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
           document.getElementById('startBlocks').innerHTML = xhttp.responseText;
-          dispatchEvent(new Event("loadStartingBlocks"));
+          dispatchEvent(new Event("loadStartingBlocks_blockly1"));
+        }
+      };
+      xhttp.open("GET", "starting_block.xml", true);
+      xhttp.send();
+
+      var xhttp2 = new XMLHttpRequest();
+      xhttp2.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          document.getElementById('startBlocks_sample_1').innerHTML = xhttp2.responseText;
+          dispatchEvent(new CustomEvent("loadStartingBlocks_blockly2"));
         }
       };
 
-      xhttp.open("GET", "starting_block.xml", true);
-      xhttp.send();
+      xhttp2.open("GET", "starting_block_sample_3.xml", true);
+      xhttp2.send();
     </script>
 
     <script src='./dist/bundle.js'></script>

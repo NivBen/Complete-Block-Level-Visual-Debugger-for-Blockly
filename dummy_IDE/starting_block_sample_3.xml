@@ -1,0 +1,77 @@
+<block type="variables_set" id="aJ5a|{v[,O3s+gZfx%1n" x="44" y="16">    
+	<field name="VAR" id="z^rZ2kUB2({9k/PrBXRy" variabletype="">n</field>    
+	<value name="VALUE">      
+		<block type="math_number" id="K4Jl1gPIF;A=!P`5CRN)">        
+			<field name="NUM">0</field>      
+		</block>    
+	</value>    
+	<next>      
+		<block type="variables_set" id="WntJjU@*[e7t=L9^:d3E">        
+			<field name="VAR" id="^M|vH)2/`KDJby4_-:za" variabletype="">numbers</field>        
+			<value name="VALUE">          
+				<block type="lists_create_with" id="O*Wvdg~eGz!DYfk9!Dpm">            
+					<mutation items="5"></mutation>            
+					<value name="ADD0">              
+						<block type="math_number" id="y9Pm#eK8TXdK$tnwYcD$">                
+							<field name="NUM">1</field>              
+						</block>            
+					</value>            
+					<value name="ADD1">              
+						<block type="math_number" id="t$`|tCpHXc7J4rwk{]dZ">                
+							<field name="NUM">2</field>              
+						</block>            
+					</value>            
+					<value name="ADD2">              
+						<block type="math_number" id="/=c5XHTrpX*3uiIqYkDP">                
+							<field name="NUM">3</field>              
+						</block>            
+					</value>            
+					<value name="ADD3">              
+						<block type="math_number" id="u,lKuDV{MAyQGq*O-:[q">                
+							<field name="NUM">4</field>              
+						</block>            
+					</value>            
+					<value name="ADD4">              
+						<block type="math_number" id="Zv`?#[fdkYIR%Y.5I-p%">                
+							<field name="NUM">5</field>              
+						</block>            
+					</value>          
+				</block>        
+			</value>        
+			<next>          
+				<block type="variables_set" id="vuf;?=lk.!thb,*9]eP^">            
+					<field name="VAR" id="p6G]ekW2DaCHlo!vdXlI" variabletype="">result</field>            
+					<value name="VALUE">              
+						<block type="lists_getIndex" id="K#Hr-HG!lkO9QTVe*tIe">                
+							<mutation statement="false" at="true"></mutation>                
+							<field name="MODE">GET</field>                
+							<field name="WHERE">FROM_START</field>                
+							<value name="VALUE">                  
+								<block type="variables_get" id="9,~P^M4B,5?i/5iYmoV3">                    
+									<field name="VAR" id="^M|vH)2/`KDJby4_-:za" variabletype="">numbers</field>                  
+								</block>                
+							</value>                
+							<value name="AT">                  
+								<block type="variables_get" id="Xp0Ln](CWZXH5s8S/?i`">                    
+									<field name="VAR" id="z^rZ2kUB2({9k/PrBXRy" variabletype="">n</field>                  
+								</block>                
+							</value>              
+						</block>            
+					</value>            
+					<next>              
+						<block type="text_print" id="(mpWDf1ZB1p[n#1Uv=n*">                
+							<value name="TEXT">                  
+								<shadow type="text" id="D1Tj14rzHjb3(}v7QjdE">                    
+									<field name="TEXT">abc</field>                  
+								</shadow>                  
+								<block type="variables_get" id="gW|5wjq~V9i.)|EedIDX">                    
+									<field name="VAR" id="p6G]ekW2DaCHlo!vdXlI" variabletype="">result</field>                  
+								</block>                
+							</value>              
+						</block>            
+					</next>          
+				</block>        
+			</next>      
+		</block>    
+	</next>  
+</block>
