@@ -33,9 +33,7 @@ function generatecode_line_mappingForWorkspace(workspace) {
             block_code = Blockly.Python.blockToCode(block)[0]; // code string only
         } else {
             block_code = Blockly.Python.blockToCode(block).split('\n')[0]; // code string only w/o proceeding blocks
-            if(block_code.includes('count2')){
-                block_code = block_code.replace(/count2/g, "count");
-            }
+            block_code = block_code.replace(/count[0-9]/gm, 'count');
         }
         var lineNumber = 1; // Start line number at 1
         var lines = generatedCode.split('\n');
