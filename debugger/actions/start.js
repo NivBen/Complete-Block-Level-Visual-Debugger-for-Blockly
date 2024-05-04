@@ -24,16 +24,18 @@ function generatecode_line_mappingForWorkspace(workspace) {
     Blockly.Python.variableDB_.setVariableMap(workspace.getVariableMap());
     // Iterate over all blocks in the workspace
     workspace.getAllBlocks().forEach(function(block) {
-        let block_code;
-        var y = block.type;
-        var x = Blockly.Python.blockToCode(block);
-        if (block.type === 'procedures_defnoreturn') {
-            block_code = 'def';
-        }else if(Array.isArray(x) /*isValueBlock(block)*/) {
-            block_code = Blockly.Python.blockToCode(block)[0]; // code string only
+        var block_code = '';
+        if(block.type === 'procedures_defnoreturn' || block.type === 'procedures_callnoreturn'){
+            let func_name = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('NAME'), Blockly.Procedures.NAME_TYPE);
+            block_code = (block.type === 'procedures_defnoreturn') ? 'def ' + func_name : func_name+'()';
         } else {
-            block_code = Blockly.Python.blockToCode(block).split('\n')[0]; // code string only w/o proceeding blocks
-            block_code = block_code.replace(/count[0-9]/gm, 'count');
+            block_code = Blockly.Python.blockToCode(block);
+            if(Array.isArray(block_code) /*isValueBlock(block)*/) {
+                block_code = Blockly.Python.blockToCode(block)[0]; // code string only
+            } else {
+                block_code = Blockly.Python.blockToCode(block).split('\n')[0]; // code string only w/o proceeding blocks
+                block_code = block_code.replace(/count[0-9]/g, "count");
+            }
         }
         var lineNumber = 1; // Start line number at 1
         var lines = generatedCode.split('\n');
@@ -116,6 +118,7 @@ Blockly_Debugger.actions["Start"].handler = (cursorBreakpoint) => {
     console.log(code1);
 
     var workspace = Blockly.getMainWorkspace();
+    Blockly.Python.init(workspace);
     // console.log(workspace.getAllBlocks());
     // console.log("#################  All Blocks  ####################");
     var code_line_mapping = generatecode_line_mappingForWorkspace(workspace);
