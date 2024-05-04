@@ -10,6 +10,19 @@
   <script src='./blockly/python_compressed.js'></script>
   <script src='./blockly/msg/js/en.js'></script>
 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+  <!-- CodeMirror -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.min.css" />
+  </link>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/codemirror.min.js"
+    integrity="sha512-XMlgZzPyVXf1I/wbGnofk1Hfdx+zAWyZjh6c21yGo/k1zNC4Ve6xcQnTDTCHrjFGsOrVicJsBURLYktVEu/8vQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/mode/python/python.min.js"
+    integrity="sha512-/mavDpedrvPG/0Grj2Ughxte/fsm42ZmZWWpHz1jCbzd5ECv8CB7PomGtw0NAnhHmE/lkDFkRMupjoohbKNA1Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <link rel='stylesheet' type='text/css' href='index.css'>
   <link rel="stylesheet" data-name="vs/editor/editor.main"
     href="https://unpkg.com/monaco-editor/min/vs/editor/editor.main.css" />
@@ -68,10 +81,21 @@
       <div id="monaco_container_python"
         style="height: 480px; width: 49%; position: absolute; left: 50%; bottom: px; border: 1px solid grey;"></div>
     </div>
-    <div>
-
+    <div class="container-fluid bg-light" style="width: 49%;">
+      <section class="input">
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page">
+              <h4>Python</h4>
+            </a>
+          </li>
+        </ul>
+        <div>
+          <textarea id="code" name="code"></textarea>
+        </div>
+      </section>
     </div>
-    <br>
+
     <xml id='toolbox' style='display: none'>
       <category id='catLogic' colour='210' name='Logic'>
         <block type='controls_if'></block>
@@ -491,9 +515,35 @@
           theme: 'vs-dark'
         });
 
+      const CodeMirrorEditor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        mode: {
+          name: "python",
+          version: 3,
+          singleLineStringErrors: false
+        },
+        lineNumbers: true,
+        indentUnit: 4,
+        matchBrackets: true,
+        gutters: ["breakpoints"],
+      });
+      CodeMirrorEditor.setValue('Generated Python Block formula will be here...');
+      // Breakpoint gutter definition
+      CodeMirrorEditor.on("gutterClick",
+        function (cm, n) {
+          var info = cm.lineInfo(n);
+          cm.setGutterMarker(n, "breakpoints", info.gutterMarkers ? null : makeMarker());
+        });
+      function makeMarker() {
+        var marker = document.createElement("div");
+        marker.style.color = "#822";
+        marker.innerHTML = "●";
+        return marker;
+      }
+
       // set initial editor code according to "startBlocks"
       var python_code = Blockly.Python.workspaceToCode(window.workspace["blockly2"]);
       python_editor.setValue(python_code);
+      CodeMirrorEditor.setValue(python_code);
 
       var isUpdating_py = false;
       var debouncedB2TUpdate_py = debounce_py(blockToTextUpdate_py, 1000);
@@ -513,6 +563,7 @@
           isUpdating_py = true;
           var updated_python_code = Blockly.Python.workspaceToCode(window.workspace["blockly2"]);
           python_editor.setValue(updated_python_code);
+          CodeMirrorEditor.setValue(updated_python_code);
         }
       }
       function textToBlockUpdate_py() {

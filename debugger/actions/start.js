@@ -2,21 +2,21 @@ import {Debuggee_Worker, Blockly_Debugger} from '../init.js';
 import './watches.js';
 
 // Check if the block's type is in the list of value block types
-function isValueBlock(block) {
-    var valueBlockTypes = ['math_number', 
-                            'text', 
-                            'logic_boolean', 
-                            'math_arithmetic', 
-                            'variables_get', 
-                            'math_modulo', 
-                            'logic_compare', 
-                            'lists_create_with',
-                            'lists_getIndex'];
-    return valueBlockTypes.includes(block.type);
-}
+// function isValueBlock(block) {
+//     var valueBlockTypes = ['math_number', 
+//                             'text', 
+//                             'logic_boolean', 
+//                             'math_arithmetic', 
+//                             'variables_get', 
+//                             'math_modulo', 
+//                             'logic_compare', 
+//                             'lists_create_with',
+//                             'lists_getIndex'];
+//     return valueBlockTypes.includes(block.type);
+// }
 
 // Function to generate JSON object containing generated code and line number for each block in the workspace
-function generatecode_line_mappingForWorkspace(workspace) {
+function generate_code_line_mapping_for_workspace(workspace) {
     // Blockly.Python.variableDB_.setVariableMap(workspace.getVariableMap());
     var code_line_mapping = {};
     // Generate Python code for the entire workspace
@@ -58,6 +58,31 @@ function generatecode_line_mappingForWorkspace(workspace) {
     });
 
     return code_line_mapping;
+}
+
+function extract_breakpoints_line_numbers(breakpoints) {
+    const lineNumbersSet = new Set();
+    breakpoints.forEach(obj => {
+        const firstLine = obj.line[0];
+        if (firstLine) {
+            lineNumbersSet.add(firstLine.line);
+        }
+    });
+    return Array.from(lineNumbersSet); // Convert Set back to array
+}
+
+function triggerBreakpoints(cm, lineNumbersSet) {
+    lineNumbersSet.forEach(lineNumber => {
+        var info = cm.lineInfo(lineNumber);
+        cm.setGutterMarker(lineNumber, "breakpoints", info.gutterMarkers ? null : create_breakpoint_marker());
+    });
+}
+
+function create_breakpoint_marker(markerClass) {
+    const marker = document.createElement("div");
+    marker.style.color = "#822";
+    marker.innerHTML = "●";
+    return marker;
 }
 
 let breakpoints = {};
@@ -121,7 +146,7 @@ Blockly_Debugger.actions["Start"].handler = (cursorBreakpoint) => {
     Blockly.Python.init(workspace);
     // console.log(workspace.getAllBlocks());
     // console.log("#################  All Blocks  ####################");
-    var code_line_mapping = generatecode_line_mappingForWorkspace(workspace);
+    var code_line_mapping = generate_code_line_mapping_for_workspace(workspace);
     console.log("#################  Blocks Info ####################");
     console.log(code_line_mapping);
     
@@ -136,7 +161,9 @@ Blockly_Debugger.actions["Start"].handler = (cursorBreakpoint) => {
     });
     console.log("#################  breakpoints ####################");
     console.log(breakpoints);
-    
+    const breakpoints_line_numbers = extract_breakpoints_line_numbers(breakpoints);
+    // console.log(breakpoints_line_numbers);
+    triggerBreakpoints(CodeMirrorEditor, breakpoints_line_numbers);
 }
 
 function copyToClipboard(text) {
