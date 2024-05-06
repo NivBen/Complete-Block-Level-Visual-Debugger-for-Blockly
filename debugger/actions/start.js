@@ -78,7 +78,7 @@ function triggerBreakpoints(cm, lineNumbersSet) {
     });
 }
 
-function create_breakpoint_marker(markerClass) {
+function create_breakpoint_marker() {
     const marker = document.createElement("div");
     marker.style.color = "#822";
     marker.innerHTML = "●";
@@ -163,7 +163,7 @@ Blockly_Debugger.actions["Start"].handler = (cursorBreakpoint) => {
     console.log(breakpoints);
     const breakpoints_line_numbers = extract_breakpoints_line_numbers(breakpoints);
     // console.log(breakpoints_line_numbers);
-    triggerBreakpoints(CodeMirrorEditor, breakpoints_line_numbers);
+    triggerBreakpoints(PythonEditor, breakpoints_line_numbers);
 }
 
 function copyToClipboard(text) {
