@@ -1,6 +1,7 @@
 import '../debugger/debugger.js';
 import '../generator/blockly/blockly.js';
 import {Blockly_Debugger} from '../debugger/debugger.js'; 
+import {Breakpoint_Icon} from '../generator/blockly/core/breakpoint.js';
 
 
 addEventListener("updateTable",function (){
@@ -50,20 +51,22 @@ addEventListener('keydown', (event) => {
     }
 });
 
-
-
-// const data = new Uint8Array(Buffer.from('Hello Node.js'));
-// fs.writeFile('message.txt', data, (err) => {
-//   if (err) throw err;
-//   console.log('The file has been saved!');
-// });
-
-// const fs = require('fs');
-// fs.writeFile('test.txt', 'Hello content!', function (err) {
-//     if (err) throw err;
-//     console.log('Saved!');
-//   });
-
-
-// fs.writeFile('message.txt', 'Hello Node.js', 'utf8', callback);
+addEventListener("addBlocklyBreakpointFromGutter", function () {
+    const block = event.detail.block;
+    if(!Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj)=>{return obj.block_id;}).includes(block.id)){
+        var new_br = {
+          "block_id" : block.id,
+          "enable" : true,
+          "icon" : new Breakpoint_Icon(block),
+          "change": false
+        }
+        Blockly_Debugger.actions["Breakpoint"].breakpoints.push(new_br);
+        block.setCollapsed(false);
+      } else{
+        var index = Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj)=>{return obj.block_id;}).indexOf(block.id);
+        var icon = Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj)=>{if(obj.block_id === block.id) return obj.icon})[index];
+        icon.myDisable();
+        if (index !== -1) Blockly_Debugger.actions["Breakpoint"].breakpoints.splice(index, 1);
+      }
+});
 

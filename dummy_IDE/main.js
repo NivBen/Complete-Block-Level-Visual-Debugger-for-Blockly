@@ -4,7 +4,7 @@ PythonEditor.on("gutterClick",
         let info = cm.lineInfo(n);
         let workspace = Blockly.getMainWorkspace();
         let isMarked = info.gutterMarkers ? true : false;
-        block_highlight_from_code(workspace, cm.lineInfo(n).text, isMarked);
+        setBlockBreakpointFromGutter(workspace, "Python", cm.lineInfo(n).text, isMarked);
         cm.setGutterMarker(n, "breakpoints", info.gutterMarkers ? null : makeManualBreakpoint());
     });
 
@@ -15,34 +15,40 @@ function makeManualBreakpoint() {
     return marker;
 }
 
-function block_highlight_from_code(workspace, input_code, isHighlighted) {
+function setBlockBreakpointFromGutter(workspace, language, input_code, isHighlighted) {
     let code_block_mapping = {};
-    Blockly.Python.variableDB_.setVariableMap(workspace.getVariableMap());
-    workspace.getAllBlocks().forEach(function(block) {
+    Blockly[language].variableDB_.setVariableMap(workspace.getVariableMap());
+    workspace.getAllBlocks().forEach(function (block) {
         var block_code = '';
-        if(block.type === 'procedures_defnoreturn' || block.type === 'procedures_callnoreturn'){
+        if (block.type === 'procedures_defnoreturn' || block.type === 'procedures_callnoreturn') {
             let func_name = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('NAME'), Blockly.Procedures.NAME_TYPE);
-            block_code = (block.type === 'procedures_defnoreturn') ? 'def ' + func_name : func_name+'()';
+            block_code = (block.type === 'procedures_defnoreturn') ? 'def ' + func_name : func_name + '()';
         } else {
-            block_code = Blockly.Python.blockToCode(block);
-            if(Array.isArray(block_code)) {
-                block_code = Blockly.Python.blockToCode(block)[0]; // code string only
+            block_code = Blockly[language].blockToCode(block);
+            if (Array.isArray(block_code)) {
+                block_code = Blockly[language].blockToCode(block)[0]; // code string only
             } else {
-                block_code = Blockly.Python.blockToCode(block).split('\n')[0]; // code string only w/o proceeding blocks
+                block_code = Blockly[language].blockToCode(block).split('\n')[0]; // code string only w/o proceeding blocks
                 block_code = block_code.replace(/count[0-9]/g, "count");
             }
         }
         code_block_mapping[block_code] = {
             "block_id": block.id,
+            "block": block,
         };
     });
 
-    if(code_block_mapping[input_code]){
-        if(!isHighlighted) {
-            console.log("highlighting block with $id: " + code_block_mapping[input_code].block_id);
+    if (code_block_mapping[input_code]) {
+        const eventData = {
+            block: code_block_mapping[input_code].block
+        };
+        dispatchEvent(new CustomEvent("addBlocklyBreakpointFromGutter", { detail: eventData }));
+        if (!isHighlighted) {
+            console.log("breakpointing block with $id: " + code_block_mapping[input_code].block_id);
             window.workspace["blockly2"].highlightBlock(code_block_mapping[input_code].block_id);
-        } else
+        } else {
             window.workspace["blockly2"].highlightBlock("");
+        }
     } else
         console.log("did not find corresponding block to this code:\n " + input_code);
 }

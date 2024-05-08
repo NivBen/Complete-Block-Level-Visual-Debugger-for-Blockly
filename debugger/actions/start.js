@@ -1,39 +1,24 @@
-import {Debuggee_Worker, Blockly_Debugger} from '../init.js';
+import { Debuggee_Worker, Blockly_Debugger } from '../init.js';
 import './watches.js';
 
-// Check if the block's type is in the list of value block types
-// function isValueBlock(block) {
-//     var valueBlockTypes = ['math_number', 
-//                             'text', 
-//                             'logic_boolean', 
-//                             'math_arithmetic', 
-//                             'variables_get', 
-//                             'math_modulo', 
-//                             'logic_compare', 
-//                             'lists_create_with',
-//                             'lists_getIndex'];
-//     return valueBlockTypes.includes(block.type);
-// }
-
 // Function to generate JSON object containing generated code and line number for each block in the workspace
-function generate_code_line_mapping_for_workspace(workspace) {
-    // Blockly.Python.variableDB_.setVariableMap(workspace.getVariableMap());
+function generate_code_line_mapping_for_workspace(workspace, language) {
     var code_line_mapping = {};
-    // Generate Python code for the entire workspace
-    var generatedCode = Blockly.Python.workspaceToCode(workspace);
-    Blockly.Python.variableDB_.setVariableMap(workspace.getVariableMap());
+    // Generate code for the entire workspace
+    var generatedCode = Blockly[language].workspaceToCode(workspace);
+    Blockly[language].variableDB_.setVariableMap(workspace.getVariableMap());
     // Iterate over all blocks in the workspace
-    workspace.getAllBlocks().forEach(function(block) {
+    workspace.getAllBlocks().forEach(function (block) {
         var block_code = '';
-        if(block.type === 'procedures_defnoreturn' || block.type === 'procedures_callnoreturn'){
+        if (block.type === 'procedures_defnoreturn' || block.type === 'procedures_callnoreturn') {
             let func_name = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('NAME'), Blockly.Procedures.NAME_TYPE);
-            block_code = (block.type === 'procedures_defnoreturn') ? 'def ' + func_name : func_name+'()';
+            block_code = (block.type === 'procedures_defnoreturn') ? 'def ' + func_name : func_name + '()';
         } else {
-            block_code = Blockly.Python.blockToCode(block);
-            if(Array.isArray(block_code) /*isValueBlock(block)*/) {
-                block_code = Blockly.Python.blockToCode(block)[0]; // code string only
+            block_code = Blockly[language].blockToCode(block);
+            if (Array.isArray(block_code) /*isValueBlock(block)*/) {
+                block_code = Blockly[language].blockToCode(block)[0]; // code string only
             } else {
-                block_code = Blockly.Python.blockToCode(block).split('\n')[0]; // code string only w/o proceeding blocks
+                block_code = Blockly[language].blockToCode(block).split('\n')[0]; // code string only w/o proceeding blocks
                 block_code = block_code.replace(/count[0-9]/g, "count");
             }
         }
@@ -71,10 +56,11 @@ function extract_breakpoints_line_numbers(breakpoints) {
     return Array.from(lineNumbersSet); // Convert Set back to array
 }
 
-function triggerBreakpoints(cm, lineNumbersSet) {
+function triggerGutterBreakpointsFromBlockly(cm, lineNumbersSet) {
     lineNumbersSet.forEach(lineNumber => {
         var info = cm.lineInfo(lineNumber);
-        cm.setGutterMarker(lineNumber, "breakpoints", info.gutterMarkers ? null : create_breakpoint_marker());
+        if (!info.gutterMarkers)
+            cm.setGutterMarker(lineNumber, "breakpoints", create_breakpoint_marker());
     });
 }
 
@@ -89,10 +75,10 @@ let breakpoints = {};
 
 Blockly_Debugger.actions["Start"] = {};
 Blockly_Debugger.actions["Start"].handler = (cursorBreakpoint) => {
-    if(Debuggee_Worker.hasInstance()) return;
+    if (Debuggee_Worker.hasInstance()) return;
     Blockly.JavaScript.STATEMENT_PREFIX = 'await $id(%1, 0);\n';
     var code1 = Blockly.JavaScript.workspaceToCode(window.workspace["blockly1"]);
-    var code2 = Blockly.JavaScript.workspaceToCode(window.workspace["blockly2"]); 
+    var code2 = Blockly.JavaScript.workspaceToCode(window.workspace["blockly2"]);
     var code = code1 + code2;
     code.replace(/__DOLLAR__/g, '\$');
     Blockly_Debugger.actions["Variables"].init();
@@ -130,40 +116,65 @@ Blockly_Debugger.actions["Start"].handler = (cursorBreakpoint) => {
                                                         </div>
                                                         </div>`;
 
-    
-    if(cursorBreakpoint instanceof MouseEvent) cursorBreakpoint = "";
-    Debuggee_Worker.Instance().postMessage({"type":"start_debugging", "data": {"code": code, 
-                                                                               "breakpoints": Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj)=>{return { "block_id" : obj.block_id,
-                                                                                                                                                                      "enable" : obj.enable}}),
-                                                                               "cursorBreakpoint": cursorBreakpoint,
-                                                                               "watches": Blockly_Debugger.actions["Watch"].getWatches(),
-                                                                               "variables": Blockly_Debugger.actions["Variables"].getVariables()
-                                                                            }});
-    console.log("################# JavaScript Code Blockly2 ####################");
-    console.log(code1);
 
-    var workspace = Blockly.getMainWorkspace();
-    Blockly.Python.init(workspace);
-    // console.log(workspace.getAllBlocks());
-    // console.log("#################  All Blocks  ####################");
-    var code_line_mapping = generate_code_line_mapping_for_workspace(workspace);
-    console.log("#################  Blocks Info ####################");
-    console.log(code_line_mapping);
-    
-    breakpoints = Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj)=> {
-        return { 
-            "location": "/dummy_IDE/sample_code.py",
-            "block_id" : obj.block_id, 
-            "line" : [{ "line": code_line_mapping[obj.block_id].lineNumber - 1, "character": 0}, 
-                      { "line": code_line_mapping[obj.block_id].lineNumber - 1, "character": 0}],
-            "enabled" : obj.enable, 
-            "code": code_line_mapping[obj.block_id].code}
+    if (cursorBreakpoint instanceof MouseEvent) cursorBreakpoint = "";
+    Debuggee_Worker.Instance().postMessage({
+        "type": "start_debugging", "data": {
+            "code": code,
+            "breakpoints": Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj) => {
+                return {
+                    "block_id": obj.block_id,
+                    "enable": obj.enable
+                }
+            }),
+            "cursorBreakpoint": cursorBreakpoint,
+            "watches": Blockly_Debugger.actions["Watch"].getWatches(),
+            "variables": Blockly_Debugger.actions["Variables"].getVariables()
+        }
     });
-    console.log("#################  breakpoints ####################");
-    console.log(breakpoints);
-    const breakpoints_line_numbers = extract_breakpoints_line_numbers(breakpoints);
-    // console.log(breakpoints_line_numbers);
-    triggerBreakpoints(PythonEditor, breakpoints_line_numbers);
+
+    // Python Editor
+    let language = "Python";
+    let editor = PythonEditor;
+    let workspace = Blockly.getMainWorkspace();
+    Blockly[language].init(workspace);
+    let code_line_mapping = generate_code_line_mapping_for_workspace(workspace, language);
+    // console.log("#################  Blocks Info ####################");
+    // console.log(code_line_mapping);
+
+    breakpoints = Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj) => {
+        return {
+            "location": "/dummy_IDE/sample_code.py",
+            "block_id": obj.block_id,
+            "line": [{ "line": code_line_mapping[obj.block_id].lineNumber - 1, "character": 0 },
+            { "line": code_line_mapping[obj.block_id].lineNumber - 1, "character": 0 }],
+            "enabled": obj.enable,
+            "code": code_line_mapping[obj.block_id].code
+        }
+    });
+    // console.log("#################  breakpoints ####################");
+    // console.log(breakpoints);
+    let breakpoints_line_numbers = extract_breakpoints_line_numbers(breakpoints);
+    triggerGutterBreakpointsFromBlockly(editor, breakpoints_line_numbers);
+
+    // JavaScript Editor
+    language = "UneditedJavaScript";
+    editor = JavaScriptEditor;
+    Blockly[language].init(workspace);
+    code_line_mapping = generate_code_line_mapping_for_workspace(workspace, language);
+    breakpoints = Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj) => {
+        return {
+            "location": "/dummy_IDE/sample_code.py",
+            "block_id": obj.block_id,
+            "line": [{ "line": code_line_mapping[obj.block_id].lineNumber - 1, "character": 0 },
+            { "line": code_line_mapping[obj.block_id].lineNumber - 1, "character": 0 }],
+            "enabled": obj.enable,
+            "code": code_line_mapping[obj.block_id].code
+        }
+    });
+    breakpoints_line_numbers = extract_breakpoints_line_numbers(breakpoints);
+    triggerGutterBreakpointsFromBlockly(editor, breakpoints_line_numbers);
+
 }
 
 function copyToClipboard(text) {
@@ -182,6 +193,6 @@ function copyToClipboard(text) {
 }
 
 Blockly_Debugger.actions["ExportBreakpointsToClipboard"] = {};
-Blockly_Debugger.actions["ExportBreakpointsToClipboard"].handler = () => { 
+Blockly_Debugger.actions["ExportBreakpointsToClipboard"].handler = () => {
     copyToClipboard(JSON.stringify(breakpoints));
 }
