@@ -11,7 +11,7 @@ function generate_code_line_mapping_for_workspace(workspace, language) {
     workspace.getAllBlocks().forEach(function (block) {
         var block_code = '';
         if (block.type === 'procedures_defnoreturn' || block.type === 'procedures_callnoreturn') {
-            let func_name = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('NAME'), Blockly.Procedures.NAME_TYPE);
+            let func_name = Blockly[language].variableDB_.getName(block.getFieldValue('NAME'), Blockly.Procedures.NAME_TYPE);
             block_code = (block.type === 'procedures_defnoreturn') ? 'def ' + func_name : func_name + '()';
         } else {
             block_code = Blockly[language].blockToCode(block);
