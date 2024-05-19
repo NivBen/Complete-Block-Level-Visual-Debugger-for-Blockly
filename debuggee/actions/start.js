@@ -13,6 +13,7 @@ function update_values(){
 Blockly_Debuggee.actions.start_debugging = (function (){
     async function handler(content){
         if(content!=undefined){        
+            let dubugg_language = content.dubugg_language;
             Blockly_Debuggee.actions["breakpoint"].update(content.breakpoints);
             Blockly_Debuggee.actions["runToCursor"].cursorBreakpoint = content.cursorBreakpoint;
             Blockly_Debuggee.actions["watch"].update(content.watches);

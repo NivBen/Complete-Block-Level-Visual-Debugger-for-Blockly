@@ -9,6 +9,7 @@
   <script src='./blockly/javascript_compressed.js'></script>
   <script src='./blockly/unedited_javascript_compressed.js'></script>
   <script src='./blockly/python_compressed.js'></script>
+  <script src='./blockly/unedited_python_compressed.js'></script>
   <script src='./blockly/msg/js/en.js'></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
@@ -554,7 +555,7 @@
       JavaScriptEditor.setValue('Generated JavaScript Block formula will be here...');
 
       // set initial editor code according to "startBlocks"
-      var python_code = Blockly.Python.workspaceToCode(window.workspace["blockly2"]);
+      var python_code = Blockly.UneditedPython.workspaceToCode(window.workspace["blockly2"]);
       var javascript_code = Blockly.UneditedJavaScript.workspaceToCode(window.workspace["blockly2"]);
       PythonEditor.setValue(python_code);
       JavaScriptEditor.setValue(javascript_code);
@@ -575,7 +576,7 @@
           isUpdating_py = false;
         } else {
           isUpdating_py = true;
-          var updated_python_code = Blockly.Python.workspaceToCode(window.workspace["blockly2"]);
+          var updated_python_code = Blockly.UneditedPython.workspaceToCode(window.workspace["blockly2"]);
           PythonEditor.setValue(updated_python_code);
           var updated_javascript_code = Blockly.UneditedJavaScript.workspaceToCode(window.workspace["blockly2"]);
           JavaScriptEditor.setValue(updated_javascript_code);

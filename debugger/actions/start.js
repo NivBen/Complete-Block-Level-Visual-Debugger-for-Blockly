@@ -72,13 +72,19 @@ function create_breakpoint_marker() {
 }
 
 let breakpoints = {};
-
 Blockly_Debugger.actions["Start"] = {};
+Blockly_Debugger.actions["Start"].language = "JavaScript";
 Blockly_Debugger.actions["Start"].handler = (cursorBreakpoint) => {
     if (Debuggee_Worker.hasInstance()) return;
-    Blockly.JavaScript.STATEMENT_PREFIX = 'await $id(%1, 0);\n';
-    var code1 = Blockly.JavaScript.workspaceToCode(window.workspace["blockly1"]);
-    var code2 = Blockly.JavaScript.workspaceToCode(window.workspace["blockly2"]);
+    let dubugg_language = Blockly_Debugger.actions["Start"].language;
+    switch(dubugg_language){
+        case "JavaScript":
+            Blockly.JavaScript.STATEMENT_PREFIX = 'await $id(%1, 0);\n';
+        case "Python":
+            Blockly.Python.STATEMENT_PREFIX = 'wait $id(%1, 0)\n';        
+    }
+    var code1 = Blockly[dubugg_language].workspaceToCode(window.workspace["blockly1"]);
+    var code2 = Blockly[dubugg_language].workspaceToCode(window.workspace["blockly2"]);
     var code = code1 + code2;
     code.replace(/__DOLLAR__/g, '\$');
     Blockly_Debugger.actions["Variables"].init();
@@ -120,6 +126,7 @@ Blockly_Debugger.actions["Start"].handler = (cursorBreakpoint) => {
     if (cursorBreakpoint instanceof MouseEvent) cursorBreakpoint = "";
     Debuggee_Worker.Instance().postMessage({
         "type": "start_debugging", "data": {
+            "dubugg_language": dubugg_language,
             "code": code,
             "breakpoints": Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj) => {
                 return {
