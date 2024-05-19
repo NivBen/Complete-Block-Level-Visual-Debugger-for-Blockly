@@ -13,7 +13,7 @@ function update_values(){
 Blockly_Debuggee.actions.start_debugging = (function (){
     async function handler(content){
         if(content!=undefined){        
-            let dubugg_language = content.dubugg_language;
+            Blockly_Debuggee.actions["dubugg_language"] = { dubugg_language: content.dubugg_language}
             Blockly_Debuggee.actions["breakpoint"].update(content.breakpoints);
             Blockly_Debuggee.actions["runToCursor"].cursorBreakpoint = content.cursorBreakpoint;
             Blockly_Debuggee.actions["watch"].update(content.watches);
@@ -21,8 +21,20 @@ Blockly_Debuggee.actions.start_debugging = (function (){
             var variables = Blockly_Debuggee.actions["variables"].getVariables();
             var watches = Blockly_Debuggee.actions["watch"].getWatches();
             var def_variables_code = Blockly_Debuggee.actions["variables"].define_variables();
-            var variablesWatches_code = "eval(update_values()); Blockly_Debuggee.actions[\"variables\"].updateDebugger(); Blockly_Debuggee.actions[\"watch\"].updateDebugger();";        
-            await eval(def_variables_code + " function evalLocal(expr){eval(expr);} Blockly_Debuggee.actions[\"eval\"].evalLocal = evalLocal;" + "async function code(){ " + content.code + variablesWatches_code + "}; code(); ");
+            var variablesWatches_code = "eval( update_values());\n" + 
+                                                "Blockly_Debuggee.actions[\"variables\"].updateDebugger();\n" + 
+                                                "Blockly_Debuggee.actions[\"watch\"].updateDebugger();\n";
+            await eval(def_variables_code + 
+                        " function evalLocal(expr){\n" +
+                            "eval(expr);\n" +
+                        "}\n" +
+                        "Blockly_Debuggee.actions[\"eval\"].evalLocal = evalLocal;\n" + 
+                        "async function code(){ \n" + 
+                            content.code +  
+                            variablesWatches_code + 
+                        "\n};\n" +
+                        "code(); "
+                    );
 
             postMessage({"type": "execution_finished"});
         } else {

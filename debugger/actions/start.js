@@ -141,7 +141,7 @@ Blockly_Debugger.actions["Start"].handler = (cursorBreakpoint) => {
     });
 
     // Python Editor
-    let language = "Python";
+    let language = "UneditedPython";
     let editor = PythonEditor;
     let workspace = Blockly.getMainWorkspace();
     Blockly[language].init(workspace);

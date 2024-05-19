@@ -61,9 +61,18 @@ Blockly_Debuggee.actions["variables"] = (function(){
 
 
     function update_values(){
-        var code = '';
-        for(var i=0; i<variables.length; ++i){
-            code += 'variables[' + i + '].value = ' + variables[i].name + ';\n';
+        let code = '';
+        switch(Blockly_Debuggee.actions["dubugg_language"].dubugg_language){
+            case "JavaScript":
+                for(let i=0; i<variables.length; ++i){
+                    code += 'variables[' + i + '].value = ' + variables[i].name + ';\n';
+                }
+                break;
+            case "Python":
+                for(let i=0; i<variables.length; ++i){
+                    code += 'variables[' + i + '].value = ' + variables[i].name + '\n'; // TODO: check with python 
+                }
+                break;
         }
         return code;
     }
@@ -77,9 +86,18 @@ Blockly_Debuggee.actions["variables"] = (function(){
     }
 
     function define_variables(){
-        var code = '';
-        for(var i=0; i<variables.length; ++i){
-            code += 'var ' + variables[i].name + ';\n';
+        let code = '';
+        switch(Blockly_Debuggee.actions["dubugg_language"].dubugg_language){
+            case "JavaScript":
+                for(let i=0; i<variables.length; ++i){
+                    code += 'var ' + variables[i].name + ';\n';
+                }
+                break;
+            case "Python":
+                for(let i=0; i<variables.length; ++i){
+                    code += variables[i].name + ' = None\n';
+                }
+                break;
         }
         return code;
     }
