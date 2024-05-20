@@ -81,8 +81,8 @@
         <div class="col-md-6">
           <div id="monaco_container_js" style="height: 240px; width: 100%; border: 1px solid grey;">
           </div>
-          <!-- <div id="monaco_container_python"
-              style="height: 480px; width: 49%; position: absolute; left: 50%; bottom: px; border: 1px solid grey;"></div> -->
+          <div id="monaco_container_python" style="height: 240px; width: 100%; border: 1px solid grey;">
+          </div>
         </div>
       </div>
     </div>
@@ -459,14 +459,20 @@
     <script src="https://unpkg.com/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
     <script src="https://unpkg.com/monaco-editor/min/vs/editor/editor.main.js"></script>
     <script>
-      var editor = monaco.editor.create(document.getElementById('monaco_container_js'),
+      var js_monaco_editor = monaco.editor.create(document.getElementById('monaco_container_js'),
         {
           value: "Generated Javascript Block formula will be here...",
           language: 'javascript',
           theme: 'vs'
         });
+      var python_monaco_editor = monaco.editor.create(document.getElementById('monaco_container_python'),
+        {
+          value: "Generated Python Block formula will be here...",
+          language: 'python',
+          theme: 'vs'
+        });
 
-      var decorations = editor.createDecorationsCollection([
+      var decorations = js_monaco_editor.createDecorationsCollection([
         {
           range: new monaco.Range(3, 1, 5, 1),
           options: {
@@ -480,9 +486,11 @@
         },
       ]);
 
-      // set initial editor code according to "startBlocks"
-      var js_code = Blockly.UneditedJavaScript.workspaceToCode(window.workspace["blockly2"]);
-      editor.setValue(js_code);
+      // set initial code according to "startBlocks"
+      var js_code = Blockly.JavaScript.workspaceToCode(window.workspace["blockly2"]);
+      js_monaco_editor.setValue(js_code);
+      var python_code = Blockly.Python.workspaceToCode(window.workspace["blockly2"]);
+      python_monaco_editor.setValue(python_code);
 
       var isUpdating = false;
       var debouncedB2TUpdate = debounce(blockToTextUpdate, 1000);
@@ -500,8 +508,10 @@
           isUpdating = false;
         } else {
           isUpdating = true;
-          var js_code = Blockly.JavaScript.workspaceToCode(window.workspace["blockly2"]);
-          editor.setValue(js_code);
+          js_code = Blockly.JavaScript.workspaceToCode(window.workspace["blockly2"]);
+          js_monaco_editor.setValue(js_code);
+          python_code = Blockly.Python.workspaceToCode(window.workspace["blockly2"]);
+          python_monaco_editor.setValue(python_code);
         }
       }
       function textToBlockUpdate() {
@@ -509,7 +519,7 @@
           isUpdating = false;
         } else {
           isUpdating = true;
-          fetch('/parse?' + new URLSearchParams({ code: editor.getValue() })).then(
+          fetch('/parse?' + new URLSearchParams({ code: js_monaco_editor.getValue() })).then(
             x => x.text()
           ).then(y => {
             if (y.charAt(0) === "E") {
@@ -529,7 +539,8 @@
       }
       window.workspace["blockly2"].addChangeListener(debouncedB2TUpdate);
       var debouncedT2BUpdate = debounce(textToBlockUpdate, 1000);
-      editor.getModel().onDidChangeContent(debouncedT2BUpdate);
+      js_monaco_editor.getModel().onDidChangeContent(debouncedT2BUpdate);
+      python_monaco_editor.getModel().onDidChangeContent(debouncedT2BUpdate);
     </script>
 
     <script>
@@ -561,7 +572,7 @@
       JavaScriptEditor.setValue(javascript_code);
 
       var isUpdating_py = false;
-      var debouncedB2TUpdate_py = debounce_py(blockToTextUpdate_py, 1000);
+      var debouncedB2TUpdate_CodeMirror = debounce_py(blockToTextUpdate_CodeMirror, 1000);
       function debounce_py(func, wait) {
         var timeout_py;
         return function () {
@@ -571,7 +582,7 @@
           }, wait);
         }
       }
-      function blockToTextUpdate_py() {
+      function blockToTextUpdate_CodeMirror() {
         if (isUpdating_py) {
           isUpdating_py = false;
         } else {
@@ -605,7 +616,7 @@
           });
         }
       }*/
-      window.workspace["blockly2"].addChangeListener(debouncedB2TUpdate_py);
+      window.workspace["blockly2"].addChangeListener(debouncedB2TUpdate_CodeMirror);
       // var debouncedT2BUpdate_py = debounce_py(textToBlockUpdate_py, 1000);
       // PythonEditor.on("change", debouncedT2BUpdate_py);
     </script>
