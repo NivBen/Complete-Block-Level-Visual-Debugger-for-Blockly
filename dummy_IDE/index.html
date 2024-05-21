@@ -9,6 +9,7 @@
   <script src='./blockly/javascript_compressed.js'></script>
   <script src='./blockly/unedited_javascript_compressed.js'></script>
   <script src='./blockly/python_compressed.js'></script>
+  <script src='./blockly/dart_compressed.js'></script>
   <script src='./blockly/msg/js/en.js'></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
@@ -88,7 +89,7 @@
     <br>
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
           <ul class="nav nav-tabs">
             <li class="nav-item">
               <a class="nav-link active" href="#tab1">Python</a>
@@ -100,7 +101,8 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6">
+
+        <div class="col-md-4">
           <ul class="nav nav-tabs">
             <li class="nav-item">
               <a class="nav-link active" href="#tab2">JavaScript</a>
@@ -108,12 +110,28 @@
           </ul>
           <div class="tab-content">
             <div id="tab2" class="tab-pane fade">
-
             </div>
             <textarea id="javascript_code" name="javascript_code"></textarea>
           </div>
         </div>
+
+        <div class="col-md-4">
+          <ul class="nav nav-tabs">
+            <li class="nav-item">
+              <a class="nav-link active" href="#tab3">Dart</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div id="tab3" class="tab-pane fade">
+
+            </div>
+            <textarea id="dart_code" name="dart_code"></textarea>
+          </div>
+        </div>
+
       </div>
+    </div>
+
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -447,7 +465,7 @@
         }
       };
 
-      xhttp2.open("GET", "starting_block_sample_3.xml", true);
+      xhttp2.open("GET", "starting_block_sample_2_corrected.xml", true);
       xhttp2.send();
     </script>
 
@@ -553,11 +571,22 @@
       });
       JavaScriptEditor.setValue('Generated JavaScript Block formula will be here...');
 
+      const DartEditor = CodeMirror.fromTextArea(document.getElementById("dart_code"), {
+        // mode: { name: "dart" },
+        lineNumbers: true,
+        indentUnit: 4,
+        matchBrackets: true,
+        gutters: ["breakpoints"],
+      });
+      DartEditor.setValue('Generated Python Block formula will be here...');
+
       // set initial editor code according to "startBlocks"
       var python_code = Blockly.Python.workspaceToCode(window.workspace["blockly2"]);
       var javascript_code = Blockly.UneditedJavaScript.workspaceToCode(window.workspace["blockly2"]);
+      var dart_code = Blockly.Dart.workspaceToCode(window.workspace["blockly2"]);
       PythonEditor.setValue(python_code);
       JavaScriptEditor.setValue(javascript_code);
+      DartEditor.setValue(dart_code);
 
       var isUpdating_py = false;
       var debouncedB2TUpdate_py = debounce_py(blockToTextUpdate_py, 1000);
@@ -579,6 +608,8 @@
           PythonEditor.setValue(updated_python_code);
           var updated_javascript_code = Blockly.UneditedJavaScript.workspaceToCode(window.workspace["blockly2"]);
           JavaScriptEditor.setValue(updated_javascript_code);
+          var updated_dart_code = Blockly.Dart.workspaceToCode(window.workspace["blockly2"]);
+          DartEditor.setValue(updated_dart_code);
         }
       }
       /*function textToBlockUpdate_py() {

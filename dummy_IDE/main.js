@@ -1,11 +1,11 @@
 // Breakpoint gutter definition
 PythonEditor.on("gutterClick",
-    function (cm, n) {
-        let info = cm.lineInfo(n);
+    function (editor, n) {
+        let info = editor.lineInfo(n);
         let workspace = Blockly.getMainWorkspace();
         let isMarked = info.gutterMarkers ? true : false;
-        setBlockBreakpointFromGutter(workspace, "Python", cm.lineInfo(n).text, isMarked);
-        cm.setGutterMarker(n, "breakpoints", info.gutterMarkers ? null : makeManualBreakpoint());
+        setBlockBreakpointFromGutter(workspace, "Python", editor.lineInfo(n).text, isMarked);
+        editor.setGutterMarker(n, "breakpoints", info.gutterMarkers ? null : makeManualBreakpoint());
     });
 
 function makeManualBreakpoint() {
@@ -37,7 +37,7 @@ function setBlockBreakpointFromGutter(workspace, language, input_code, isHighlig
             "block": block,
         };
     });
-
+    input_code = input_code.trimStart(); // remove initial whitespaces (common in python)
     if (code_block_mapping[input_code]) {
         const eventData = {
             block: code_block_mapping[input_code].block
