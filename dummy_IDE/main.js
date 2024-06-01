@@ -52,3 +52,41 @@ function setBlockBreakpointFromGutter(workspace, language, input_code, isHighlig
     } else
         console.log("did not find corresponding block to this code:\n " + input_code);
 }
+
+// Blockly XML Load Modal - Start
+let modal = document.getElementById("XMLModal");
+
+let displayBlocklyBtn = document.getElementById("DisplayBlocklyButton");
+displayBlocklyBtn.onclick = function() {
+  modal.style.display = "block";
+  let blocks_workspace = window.workspace["blockly2"];
+  var xml = Blockly.Xml.workspaceToDom(blocks_workspace);
+  var xml_text = Blockly.Xml.domToPrettyText(xml);
+  let input = document.getElementById("XML_paragraph");
+  input.textContent = xml_text;
+}
+
+let LoadXMLtoBlocklyBtn = document.getElementById("LoadXMLtoBlocklyButton");
+LoadXMLtoBlocklyBtn.onclick = function() {
+  let input = document.getElementById('XML_paragraph');
+  try {
+    var xml = Blockly.Xml.textToDom(input.textContent);
+    let blocks_workspace = window.workspace["blockly2"];
+    blocks_workspace.clear(); // clear workspace before importing 
+    Blockly.Xml.domToWorkspace(xml, blocks_workspace);
+  } catch {
+      alert('invalid XML text for import');
+  }
+}
+
+let span = document.getElementsByClassName("close")[0];  // Get the <span> element that closes the modal
+let btn = document.getElementById("DisplayBlocklyButton");
+span.onclick = function() { // When the user clicks on <span> (x), close the modal
+  modal.style.display = "none";
+}
+window.onclick = function(event) {  // When the user clicks anywhere outside of the modal, close it
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+// Modal - Finish

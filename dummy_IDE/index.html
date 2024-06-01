@@ -57,18 +57,33 @@
   <h1>
     <a href='https://github.com/krystalsavv/Complete-Block-Level-Visual-Debugger-for-Blockly'>Complete Block Level
       Visual Debugger for Blockly</a>
-    <p>
-    <div id='action_bar'>
-      <button id='ContinueButton'>Continue</button>
+  </h1>
+    
+  <p>
+    <div id='action_bar' style="display: flex;">
       <button id='StartButton'>Start Debugging</button>
       <button id='StepInButton'>Step In</button>
       <button id='StepOverButton'>Step Over</button>
       <button id='StepParentButton'>Step Parent</button>
       <button id='StepOutButton'>Step Out</button>
+      <button id='ContinueButton'>Continue</button>
       <button id='StopButton'>Stop</button>
+    </div>
+
+    <div style="display: flex;">
+      <button id="DisplayBlocklyButton">Display Blockly XML</button>
       <button id='ExportBreakpointsButton'>Export Breakpoints</button>
     </div>
-    </p>
+
+    <div id="XMLModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <button id='LoadXMLtoBlocklyButton'>Load XML to Blockly Workspace</button>
+        <code contenteditable="true" id="XML_paragraph" style="white-space: pre-wrap"></code>
+      </div>
+    </div>
+  </p>
+
     <div id='val_table'></div>
     <br><br>
     <div id='blocklyDiv' style='height: 480px; width: 600px;'></div>
