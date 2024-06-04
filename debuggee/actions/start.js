@@ -21,7 +21,7 @@ Blockly_Debuggee.actions.start_debugging = (function (){
             var watches = Blockly_Debuggee.actions["watch"].getWatches();
             var def_variables_code = Blockly_Debuggee.actions["variables"].define_variables();
             var variablesWatches_code = "eval(update_values()); Blockly_Debuggee.actions[\"variables\"].updateDebugger(); Blockly_Debuggee.actions[\"watch\"].updateDebugger();";        
-            let wrap_code_with_try_catch = "let startTime, endTime;\n" + 
+            let wrap_code_with_try_catch = "let startTime; let endTime = 0 ;\n" + 
                 "try {\n" +
                 // "throw new TypeError(\"error message\");\n" +
                 "startTime = performance.now();\n" +
@@ -31,7 +31,7 @@ Blockly_Debuggee.actions.start_debugging = (function (){
                     "\t\twindow.alert(\"Recieved Following Runtime Error: \" + name + " +
                             "\"\\n============================\"" +
                             "+ \"\\nMessage: \" + message)" +
-                "\t} finally { window.alert(\"Run time is: \" + (endTime - startTime) + \" milliseconds\"); }";
+                "\t} finally { if(endTime !== 0) window.alert(\"Run time is: \" + (endTime - startTime) + \" milliseconds\"); }";
             content.code  = wrap_code_with_try_catch;
             await eval(def_variables_code + 
                 " function evalLocal(expr){eval(expr);}" + 
