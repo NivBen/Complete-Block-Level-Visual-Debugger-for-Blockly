@@ -51,22 +51,22 @@ addEventListener('keydown', (event) => {
     }
 });
 
-addEventListener("addBlocklyBreakpointFromGutter", function () {
-    const block = event.detail.block;
-    if(!Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj)=>{return obj.block_id;}).includes(block.id)){
-        var new_br = {
-          "block_id" : block.id,
-          "enable" : true,
-          "icon" : new Breakpoint_Icon(block),
-          "change": false
-        }
-        Blockly_Debugger.actions["Breakpoint"].breakpoints.push(new_br);
-        block.setCollapsed(false);
-      } else{
-        var index = Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj)=>{return obj.block_id;}).indexOf(block.id);
-        var icon = Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj)=>{if(obj.block_id === block.id) return obj.icon})[index];
-        icon.myDisable();
-        if (index !== -1) Blockly_Debugger.actions["Breakpoint"].breakpoints.splice(index, 1);
-      }
-});
+// addEventListener("addBlocklyBreakpointFromGutter", function () {
+//     const block = event.detail.block;
+//     if(!Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj)=>{return obj.block_id;}).includes(block.id)){
+//         var new_br = {
+//           "block_id" : block.id,
+//           "enable" : true,
+//           "icon" : new Breakpoint_Icon(block),
+//           "change": false
+//         }
+//         Blockly_Debugger.actions["Breakpoint"].breakpoints.push(new_br);
+//         block.setCollapsed(false);
+//       } else{
+//         var index = Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj)=>{return obj.block_id;}).indexOf(block.id);
+//         var icon = Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj)=>{if(obj.block_id === block.id) return obj.icon})[index];
+//         icon.myDisable();
+//         if (index !== -1) Blockly_Debugger.actions["Breakpoint"].breakpoints.splice(index, 1);
+//       }
+// });
 

@@ -1,5 +1,6 @@
 import { Debuggee_Worker, Blockly_Debugger } from '../init.js';
 import './watches.js';
+import { PythonEditor, JavaScriptEditor, DartEditor } from '../../dummy_IDE/index.js';
 
 // Function to generate JSON object containing generated code and line number for each block in the workspace
 function generate_code_line_mapping_for_workspace(workspace, language) {

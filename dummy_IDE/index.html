@@ -75,6 +75,13 @@
       <button id='ExportBreakpointsButton'>Export Breakpoints</button>
     </div>
 
+    <!-- <div class="container" style="display: flex;">
+      <textarea id="textBox" placeholder="Enter your text here..."></textarea>
+      <button id="saveButton">Save Text</button>
+      <button id="logSnapshotsButton">Log Text</button>
+      <div id="savedButtonsContainer"></div>
+    </div> -->
+
     <div id="XMLModal" class="modal">
       <div class="modal-content">
         <span class="close">&times;</span>
@@ -563,100 +570,6 @@
       var debouncedT2BUpdate = debounce(textToBlockUpdate, 1000);
       editor.getModel().onDidChangeContent(debouncedT2BUpdate);
     </script>
-
-    <script>
-      const PythonEditor = CodeMirror.fromTextArea(document.getElementById("python_code"), {
-        mode: {
-          name: "python",
-          version: 3,
-          singleLineStringErrors: false
-        },
-        lineNumbers: true,
-        indentUnit: 4,
-        matchBrackets: true,
-        gutters: ["breakpoints"],
-      });
-      PythonEditor.setValue('Generated Python Block formula will be here...');
-
-      const JavaScriptEditor = CodeMirror.fromTextArea(document.getElementById("javascript_code"), {
-        lineNumbers: true,
-        indentUnit: 4,
-        matchBrackets: true,
-        gutters: ["breakpoints"],
-      });
-      JavaScriptEditor.setValue('Generated JavaScript Block formula will be here...');
-
-      const DartEditor = CodeMirror.fromTextArea(document.getElementById("dart_code"), {
-        // mode: { name: "dart" },
-        lineNumbers: true,
-        indentUnit: 4,
-        matchBrackets: true,
-        gutters: ["breakpoints"],
-      });
-      DartEditor.setValue('Generated Python Block formula will be here...');
-
-      // set initial editor code according to "startBlocks"
-      var python_code = Blockly.Python.workspaceToCode(window.workspace["blockly2"]);
-      var javascript_code = Blockly.UneditedJavaScript.workspaceToCode(window.workspace["blockly2"]);
-      var dart_code = Blockly.Dart.workspaceToCode(window.workspace["blockly2"]);
-      PythonEditor.setValue(python_code);
-      JavaScriptEditor.setValue(javascript_code);
-      DartEditor.setValue(dart_code);
-
-      var isUpdating_py = false;
-      var debouncedB2TUpdate_py = debounce_py(blockToTextUpdate_py, 1000);
-      function debounce_py(func, wait) {
-        var timeout_py;
-        return function () {
-          clearTimeout(timeout_py);
-          timeout_py = setTimeout(() => {
-            func.apply(this, arguments);
-          }, wait);
-        }
-      }
-      function blockToTextUpdate_py() {
-        if (isUpdating_py) {
-          isUpdating_py = false;
-        } else {
-          isUpdating_py = true;
-          var updated_python_code = Blockly.Python.workspaceToCode(window.workspace["blockly2"]);
-          PythonEditor.setValue(updated_python_code);
-          var updated_javascript_code = Blockly.UneditedJavaScript.workspaceToCode(window.workspace["blockly2"]);
-          JavaScriptEditor.setValue(updated_javascript_code);
-          var updated_dart_code = Blockly.Dart.workspaceToCode(window.workspace["blockly2"]);
-          DartEditor.setValue(updated_dart_code);
-        }
-      }
-      /*function textToBlockUpdate_py() {
-        if (isUpdating_py) {
-          isUpdating_py = false;
-        } else {
-          isUpdating_py = true;
-          fetch('/parse?' + new URLSearchParams({ code: PythonEditor.getValue() })).then(
-            x => x.text()
-          ).then(y => {
-            if (y.charAt(0) === "E") {
-              error_bar = document.getElementById('error_bar');
-              error_bar.innerHTML = y;
-              error_bar.style.opacity = 1;
-              isUpdating_py = false;
-            } else {
-              var response1_py = JSON.parse(y);
-              error_bar.style.opacity = 0;
-              error_bar.value = "";
-
-              Blockly.serialization.workspaces.load(response1_py, window.workspace["blockly2"]);
-            }
-          });
-        }
-      }*/
-      window.workspace["blockly2"].addChangeListener(debouncedB2TUpdate_py);
-      // var debouncedT2BUpdate_py = debounce_py(textToBlockUpdate_py, 1000);
-      // PythonEditor.on("change", debouncedT2BUpdate_py);
-    </script>
-
-    <script type="module" src="main.js"></script>
-
 
 </body>
 
