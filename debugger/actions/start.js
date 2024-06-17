@@ -64,11 +64,12 @@ function triggerGutterBreakpointsFromBlockly(cm, lineNumbersSet) {
     });
 }
 
-
+// triggers breakpoint gutters on a given CodeMirror editor and language, 
+// returns a BreakpointIO JSON for importing breakpoints in VS code (using BreakpointIO Extention)
 function trigger_gutter_breakpoints_from_blockly(workspace, language, editor) {
     Blockly[language].init(workspace);
     let code_line_mapping = generate_code_line_mapping_for_workspace(workspace, language);
-    let breakpoints = Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj) => {
+    let breakpointIO = Blockly_Debugger.actions["Breakpoint"].breakpoints.map((obj) => {
         return {
             "location": "/dummy_IDE/sample_code.py",
             "block_id": obj.block_id,
@@ -78,13 +79,16 @@ function trigger_gutter_breakpoints_from_blockly(workspace, language, editor) {
             "code": code_line_mapping[obj.block_id].code
         }
     });
-    let breakpoints_line_numbers = extract_breakpoints_line_numbers(breakpoints);
 
+    // set breakpoints gutters
+    let breakpoints_line_numbers = extract_breakpoints_line_numbers(breakpointIO);
     breakpoints_line_numbers.forEach(lineNumber => {
         var info = editor.lineInfo(lineNumber);
         if (!info.gutterMarkers)
             editor.setGutterMarker(lineNumber, "breakpoints", create_breakpoint_marker());
     });
+
+    return breakpointIO;
 }
 
 function create_breakpoint_marker() {
@@ -94,7 +98,7 @@ function create_breakpoint_marker() {
     return marker;
 }
 
-let breakpoints = {};
+let breakpointIO_output = {};
 
 Blockly_Debugger.actions["Start"] = {};
 Blockly_Debugger.actions["Start"].handler = (cursorBreakpoint) => {
@@ -160,7 +164,8 @@ Blockly_Debugger.actions["Start"].handler = (cursorBreakpoint) => {
     // Python Editor
     let language = "Python";
     let editor = PythonEditor;
-    trigger_gutter_breakpoints_from_blockly(workspace, language, editor);
+     // only export breakpointIO JSON for Python. TODO: generalize after adding 'selected language' option
+    breakpointIO_output = trigger_gutter_breakpoints_from_blockly(workspace, language, editor);
 
     // JavaScript Editor
     language = "UneditedJavaScript";
@@ -190,5 +195,5 @@ function copyToClipboard(text) {
 
 Blockly_Debugger.actions["ExportBreakpointsToClipboard"] = {};
 Blockly_Debugger.actions["ExportBreakpointsToClipboard"].handler = () => {
-    copyToClipboard(JSON.stringify(breakpoints));
+    copyToClipboard(JSON.stringify(breakpointIO_output));
 }
