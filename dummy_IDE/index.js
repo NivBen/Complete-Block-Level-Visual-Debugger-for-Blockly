@@ -195,11 +195,32 @@ window.onclick = function (event) {  // When the user clicks anywhere outside of
 // Breakpoint gutter definition
 PythonEditor.on("gutterClick",
     function (editor, n) {
+        if(!(Blockly_Debuggee.state.currProgrammingLanguage === "Python"))
+            return;
         let info = editor.lineInfo(n);
         let workspace = Blockly.getMainWorkspace();
-        let chosen_language = "Python";
         let isMarked = info.gutterMarkers ? true : false;
-        setBlockBreakpointFromGutter(workspace, chosen_language, editor.lineInfo(n).text, isMarked);
+        setBlockBreakpointFromGutter(workspace, "Python", editor.lineInfo(n).text, isMarked);
+        editor.setGutterMarker(n, "breakpoints", info.gutterMarkers ? null : makeManualBreakpoint());
+    });
+JavaScriptEditor.on("gutterClick",
+    function (editor, n) {
+        if(!(Blockly_Debuggee.state.currProgrammingLanguage === "JavaScript"))
+            return;
+        let info = editor.lineInfo(n);
+        let workspace = Blockly.getMainWorkspace();
+        let isMarked = info.gutterMarkers ? true : false;
+        setBlockBreakpointFromGutter(workspace, "UneditedJavaScript", editor.lineInfo(n).text, isMarked);
+        editor.setGutterMarker(n, "breakpoints", info.gutterMarkers ? null : makeManualBreakpoint());
+    });
+DartEditor.on("gutterClick",
+    function (editor, n) {
+        if(!(Blockly_Debuggee.state.currProgrammingLanguage === "Dart"))
+            return;
+        let info = editor.lineInfo(n);
+        let workspace = Blockly.getMainWorkspace();
+        let isMarked = info.gutterMarkers ? true : false;
+        setBlockBreakpointFromGutter(workspace, "Dart", editor.lineInfo(n).text, isMarked);
         editor.setGutterMarker(n, "breakpoints", info.gutterMarkers ? null : makeManualBreakpoint());
     });
 

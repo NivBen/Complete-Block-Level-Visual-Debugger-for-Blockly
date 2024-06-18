@@ -1,4 +1,5 @@
 import { Debuggee_Worker, Blockly_Debugger } from '../init.js';
+import { Blockly_Debuggee } from '../../debuggee/init.js';
 import './watches.js';
 import { PythonEditor, JavaScriptEditor, DartEditor } from '../../dummy_IDE/index.js';
 
@@ -162,21 +163,39 @@ Blockly_Debugger.actions["Start"].handler = (cursorBreakpoint) => {
     });
 
     let workspace = Blockly.getMainWorkspace();
-    // Python Editor
-    let language = "Python";
-    let editor = PythonEditor;
-     // only export breakpointIO JSON for Python. TODO: generalize after adding 'selected language' option
-    breakpointIO_output = trigger_gutter_breakpoints_from_blockly(workspace, language, editor);
+    let editor = '';
+    let chosen_language = '';
+    switch (Blockly_Debuggee.state.currProgrammingLanguage) {
+        case "Python":
+            editor = PythonEditor;
+            chosen_language = "Python";
+            break;
+        case "JavaScript":
+            editor = JavaScriptEditor;
+            chosen_language = "UneditedJavaScript";
+            break;
+        case "Dart":
+            editor = DartEditor;
+            chosen_language = "Dart";
+            break;
+    }
+    breakpointIO_output = trigger_gutter_breakpoints_from_blockly(workspace, chosen_language, editor);
 
-    // JavaScript Editor
-    language = "UneditedJavaScript";
-    editor = JavaScriptEditor;
-    trigger_gutter_breakpoints_from_blockly(workspace, language, editor);
+    // // Python Editor
+    // let language = "Python";
+    // editor = PythonEditor;
+    // // only export breakpointIO JSON for Python. TODO: generalize after adding 'selected language' option
+    // breakpointIO_output = trigger_gutter_breakpoints_from_blockly(workspace, language, editor);
 
-    // Dart Editor
-    language = "Dart";
-    editor = DartEditor;
-    trigger_gutter_breakpoints_from_blockly(workspace, language, editor);
+    // // JavaScript Editor
+    // language = "UneditedJavaScript";
+    // editor = JavaScriptEditor;
+    // trigger_gutter_breakpoints_from_blockly(workspace, language, editor);
+
+    // // Dart Editor
+    // language = "Dart";
+    // editor = DartEditor;
+    // trigger_gutter_breakpoints_from_blockly(workspace, language, editor);
 }
 
 function copyToClipboard(text) {
