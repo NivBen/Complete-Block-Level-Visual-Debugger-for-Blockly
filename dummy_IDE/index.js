@@ -14,6 +14,32 @@ document.getElementById("StopButton").onclick = Blockly_Debugger.actions["Stop"]
 document.getElementById("StartButton").onclick = Blockly_Debugger.actions["Start"].handler;
 document.getElementById("ExportBreakpointsButton").onclick = Blockly_Debugger.actions["ExportBreakpointsToClipboard"].handler;
 
+document.addEventListener('DOMContentLoaded', () => {
+    const dropdown = document.getElementById('language_options');
+    dropdown.selectedIndex = 0; // select first option
+    let selectedOption = '';
+    // const selectedOptionDisplay = document.getElementById('selected_language_option');
+
+    function updateSelectedOption(event) { // Function to update the state and display the selected option
+        selectedOption = event.target.value;
+        // selectedOptionDisplay.textContent = `Selected option: ${selectedOption}`;
+        Blockly_Debuggee.state.currProgrammingLanguage = selectedOption;
+
+        document.querySelectorAll('.nav-link').forEach(link => { // Remove existing highlights
+            link.classList.remove('highlightChosenLanguage');
+            link.parentElement.style.backgroundColor = '#fff';
+        });
+        const link = Array.from(document.querySelectorAll('.nav-link')) // Highlight the specified selection
+            .find(link => link.textContent.trim() === selectedOption);
+        if (link) {
+            link.classList.add('highlightChosenLanguage');
+            link.parentElement.style.backgroundColor = '#fa2a2a';
+        }
+    }
+    dropdown.addEventListener('change', updateSelectedOption); // Add event listener to the dropdown to handle selection changes
+    updateSelectedOption({ target: dropdown }); // Initial display update
+});
+
 // document.addEventListener('DOMContentLoaded', () => {
 //     const textBox = document.getElementById('textBox');
 //     const saveButton = document.getElementById('saveButton');
