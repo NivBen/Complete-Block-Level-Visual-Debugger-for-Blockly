@@ -55,12 +55,13 @@
 
 <body>
   <h1>
-    <a href='https://github.com/krystalsavv/Complete-Block-Level-Visual-Debugger-for-Blockly'>Complete Block Level
-      Visual Debugger for Blockly</a>
+    Based on <u><a href='https://github.com/krystalsavv/Complete-Block-Level-Visual-Debugger-for-Blockly'>Complete Block Level
+      Visual Debugger for Blockly</a></u>
   </h1>
     
   <p>
-    <div id='action_bar' style="display: flex;">
+    <div id='action_bar'>
+      <h4>Debugger Controls:</h4>
       <button id='StartButton'>Start Debugging</button>
       <button id='StepInButton'>Step In</button>
       <button id='StepOverButton'>Step Over</button>
@@ -70,22 +71,21 @@
       <button id='StopButton'>Stop</button>
     </div>
 
-    <div style="display: flex;">
+    <div id='tools_bar'>
+      <h4>Debugger Tools:</h4>
       <button id="DisplayBlocklyButton">Display Blockly XML</button>
-      <button id='ExportBreakpointsButton'>Export Breakpoints</button>
+      <button id='ExportBreakpointsButton'>Export BreakpointIO JSON</button>
     </div>
-
-    <!-- <div class="container" style="display: flex;">
-      <textarea id="textBox" placeholder="Enter your text here..."></textarea>
-      <button id="saveButton">Save Text</button>
-      <button id="logSnapshotsButton">Log Text</button>
-      <div id="savedButtonsContainer"></div>
-    </div> -->
 
     <div id="XMLModal" class="modal">
       <div class="modal-content">
         <span class="close">&times;</span>
-        <button id='LoadXMLtoBlocklyButton'>Load XML to Blockly Workspace</button>
+        <div>
+          <button id='LoadXMLtoBlocklyButton'>Load XML to Blockly Workspace</button>
+          <button id="saveSnapshotButton">Save XML Snapshot</button>
+          <button id="logSnapshotsButton">Alert XML Metadata</button>
+        </div>
+        <div id="savedButtonsContainer"></div>
         <code contenteditable="true" id="XML_paragraph" style="white-space: pre-wrap"></code>
       </div>
     </div>

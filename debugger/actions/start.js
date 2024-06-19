@@ -180,22 +180,6 @@ Blockly_Debugger.actions["Start"].handler = (cursorBreakpoint) => {
             break;
     }
     breakpointIO_output = trigger_gutter_breakpoints_from_blockly(workspace, chosen_language, editor);
-
-    // // Python Editor
-    // let language = "Python";
-    // editor = PythonEditor;
-    // // only export breakpointIO JSON for Python. TODO: generalize after adding 'selected language' option
-    // breakpointIO_output = trigger_gutter_breakpoints_from_blockly(workspace, language, editor);
-
-    // // JavaScript Editor
-    // language = "UneditedJavaScript";
-    // editor = JavaScriptEditor;
-    // trigger_gutter_breakpoints_from_blockly(workspace, language, editor);
-
-    // // Dart Editor
-    // language = "Dart";
-    // editor = DartEditor;
-    // trigger_gutter_breakpoints_from_blockly(workspace, language, editor);
 }
 
 function copyToClipboard(text) {

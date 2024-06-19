@@ -15,6 +15,7 @@ document.getElementById("StartButton").onclick = Blockly_Debugger.actions["Start
 document.getElementById("ExportBreakpointsButton").onclick = Blockly_Debugger.actions["ExportBreakpointsToClipboard"].handler;
 
 document.addEventListener('DOMContentLoaded', () => {
+    /* Selected Programming language dropdown*/
     const dropdown = document.getElementById('language_options');
     dropdown.selectedIndex = 0; // select first option
     let selectedOption = '';
@@ -38,57 +39,66 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     dropdown.addEventListener('change', updateSelectedOption); // Add event listener to the dropdown to handle selection changes
     updateSelectedOption({ target: dropdown }); // Initial display update
+
+    /* Display Blockly XML Modal and Snapshot logic */
+    const textBox = document.getElementById('XML_paragraph');
+    const saveSnapshotButton = document.getElementById('saveSnapshotButton');
+    const logSnapshotsButton = document.getElementById('logSnapshotsButton');
+    const savedButtonsContainer = document.getElementById('savedButtonsContainer');
+    window.savedSnapshots = []; // Make savedSnapshots a global variable. TODO: Maybe add to Debuggee state
+
+    function formatDateTime(timestamp) { // Function to format date and time
+        const dd = String(timestamp.getDate()).padStart(2, '0');
+        const mm = String(timestamp.getMonth() + 1).padStart(2, '0'); // January is 0!
+        const hh = String(timestamp.getHours()).padStart(2, '0');
+        const min = String(timestamp.getMinutes()).padStart(2, '0');
+        return `${dd}/${mm} | ${hh}:${min}`;
+    }
+
+    function createSnapshotButton(snapshot, index) { // Function to create a snapshot button
+        const button = document.createElement('button');
+        button.className = 'snapshot-button';
+        button.innerHTML = `Snapshot ${formatDateTime(snapshot.time)} <span class="delete">&times;</span>`;
+        button.addEventListener('click', (event) => {
+            if (event.target.classList.contains('delete')) { // Handle delete action
+                event.stopPropagation(); // Prevent triggering the button's click event
+                window.savedSnapshots.splice(index, 1);
+                renderSnapshotButtons();
+            } else { // Handle load action
+                textBox.textContent = snapshot.text;
+            }
+        });
+        button.title = `Saved on: ${formatDateTime(snapshot.time)}`;
+        return button;
+    }
+
+    function renderSnapshotButtons() { // Function to render all snapshot buttons
+        savedButtonsContainer.innerHTML = ''; // Clear the container
+        window.savedSnapshots.forEach((snapshot, index) => {
+            const button = createSnapshotButton(snapshot, index);
+            savedButtonsContainer.appendChild(button);
+        });
+    }
+
+    saveSnapshotButton.addEventListener('click', () => {
+        const currentText = textBox.textContent.trim();
+        if (currentText === '') {
+            alert('Text box is empty. Please enter some text.');
+            return;
+        }
+        const timestamp = new Date();
+        const snapshot = {
+            text: currentText,
+            time: timestamp
+        };
+        window.savedSnapshots.push(snapshot);
+        renderSnapshotButtons();
+    });
+
+    logSnapshotsButton.addEventListener('click', () => {
+        console.log(window.savedSnapshots);
+    });
 });
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     const textBox = document.getElementById('textBox');
-//     const saveButton = document.getElementById('saveButton');
-//     const logSnapshotsButton = document.getElementById('logSnapshotsButton');
-//     const savedButtonsContainer = document.getElementById('savedButtonsContainer');
-
-//     // Make savedSnapshots a global variable
-//     window.savedSnapshots = [];
-
-//     // Function to format date and time
-//     function formatDateTime(timestamp) {
-//         const dd = String(timestamp.getDate()).padStart(2, '0');
-//         const mm = String(timestamp.getMonth() + 1).padStart(2, '0'); // January is 0!
-//         const hh = String(timestamp.getHours()).padStart(2, '0');
-//         const min = String(timestamp.getMinutes()).padStart(2, '0');
-//         return `${dd}/${mm} | ${hh}:${min}`;
-//     }
-
-//     saveButton.addEventListener('click', () => {
-//         const currentText = textBox.value.trim();
-//         if (currentText === '') {
-//             alert('Text box is empty. Please enter some text.');
-//             return;
-//         }
-
-//         const timestamp = new Date();
-//         const snapshot = {
-//             text: currentText,
-//             time: timestamp
-//         };
-
-//         window.savedSnapshots.push(snapshot);
-//         const savedButton = document.createElement('button');
-//         savedButton.innerText = `Snapshot ${formatDateTime(timestamp)}`;
-//         savedButton.addEventListener('click', () => {
-//             textBox.value = snapshot.text;
-//         });
-//         savedButton.title = `Saved on: ${formatDateTime(timestamp)}`;
-//         savedButtonsContainer.appendChild(savedButton);
-//     });
-
-//     logSnapshotsButton.addEventListener('click', () => {
-//         console.log(window.savedSnapshots);
-//         console.log(Blockly_Debuggee.state);
-//         // Blockly_Debugger.actions["Breakpoint"].breakpoints = {}
-//         console.log(Blockly_Debugger.actions["Breakpoint"].breakpoints);
-//         console.log(window.workspace["blockly2"]);
-//     });
-// });
 
 // Editors Definition - Start
 export var PythonEditor = CodeMirror.fromTextArea(document.getElementById("python_code"), {
