@@ -89,7 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const timestamp = new Date();
         const snapshot = {
             text: currentText,
-            time: timestamp
+            time: timestamp,
+            blockly_brekpoints: Blockly_Debugger.actions["Breakpoint"].breakpoints
         };
         window.savedSnapshots.push(snapshot);
         renderSnapshotButtons();
